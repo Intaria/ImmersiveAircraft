@@ -6,8 +6,7 @@ import immersive_aircraft.data.AircraftDataLoader;
 import immersive_aircraft.entity.misc.AircraftProperties;
 import immersive_aircraft.entity.misc.PositionDescriptor;
 import immersive_aircraft.entity.misc.Trail;
-import immersive_aircraft.entity.weapons.Telescope;
-import immersive_aircraft.entity.weapons.Weapon;
+
 import immersive_aircraft.item.upgrade.AircraftStat;
 import immersive_aircraft.resources.bbmodel.BBAnimationVariables;
 import immersive_aircraft.util.Utils;
@@ -151,14 +150,7 @@ public abstract class AircraftEntity extends InventoryVehicleEntity {
     }
 
     public boolean isScoping() {
-        Collection<List<Weapon>> values = getWeapons().values();
-        for (List<Weapon> weapons : values) {
-            for (Weapon weapon : weapons) {
-                if (weapon instanceof Telescope telescope && telescope.isScoping()) {
-                    return true;
-                }
-            }
-        }
+        
         return false;
     }
 

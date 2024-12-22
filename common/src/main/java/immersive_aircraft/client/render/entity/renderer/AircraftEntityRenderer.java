@@ -4,13 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3f;
 import immersive_aircraft.Main;
-import immersive_aircraft.WeaponRendererRegistry;
 import immersive_aircraft.client.render.entity.renderer.utils.BBModelRenderer;
 import immersive_aircraft.client.render.entity.renderer.utils.ModelPartRenderHandler;
-import immersive_aircraft.client.render.entity.weaponRenderer.WeaponRenderer;
 import immersive_aircraft.entity.AircraftEntity;
 import immersive_aircraft.entity.misc.VehicleInventoryDescription;
-import immersive_aircraft.entity.weapons.Weapon;
 import immersive_aircraft.resources.BBModelLoader;
 import immersive_aircraft.resources.bbmodel.*;
 import immersive_aircraft.util.Utils;
@@ -84,19 +81,6 @@ public abstract class AircraftEntityRenderer<T extends AircraftEntity> extends E
             float g = health * 0.4f + 0.6f;
             float b = health * 0.4f + 0.6f;
             BBModelRenderer.renderModel(bbModel, matrixStack, vertexConsumerProvider, light, time, entity, getModel(entity), r, g, b, 1.0f);
-        }
-
-        //Render weapons
-        LocalPlayer player = Minecraft.getInstance().player;
-        for (List<Weapon> weapons : entity.getWeapons().values()) {
-            for (Weapon weapon : weapons) {
-                if (!weapon.getMount().blocking() || !Main.firstPersonGetter.isFirstPerson() || player == null || !entity.hasPassenger(player)) {
-                    WeaponRenderer<Weapon> renderer = WeaponRendererRegistry.get(weapon);
-                    if (renderer != null) {
-                        renderer.render(entity, weapon, matrixStack, vertexConsumerProvider, light, tickDelta);
-                    }
-                }
-            }
         }
 
         //Render trails

@@ -1,13 +1,9 @@
 package immersive_aircraft.entity;
 
-import immersive_aircraft.WeaponRegistry;
 import immersive_aircraft.cobalt.network.NetworkHandler;
 import immersive_aircraft.data.AircraftDataLoader;
 import immersive_aircraft.entity.misc.SparseSimpleInventory;
 import immersive_aircraft.entity.misc.VehicleInventoryDescription;
-import immersive_aircraft.entity.misc.WeaponMount;
-import immersive_aircraft.entity.weapons.Weapon;
-import immersive_aircraft.item.WeaponItem;
 import immersive_aircraft.item.upgrade.AircraftStat;
 import immersive_aircraft.item.upgrade.AircraftUpgrade;
 import immersive_aircraft.item.upgrade.AircraftUpgradeRegistry;
@@ -38,21 +34,9 @@ import java.util.Map;
 
 public abstract class InventoryVehicleEntity extends VehicleEntity implements ContainerListener, MenuProvider {
     private SparseSimpleInventory inventory;
-    protected Map<Integer, List<Weapon>> weapons = new HashMap<>();
 
     public VehicleInventoryDescription getInventoryDescription() {
         return AircraftDataLoader.get(identifier).getInventoryDescription();
-    }
-
-    private static final List<WeaponMount> EMPTY_WEAPONS = List.of(WeaponMount.EMPTY);
-    private static final Map<WeaponMount.Type, List<WeaponMount>> EMPTY_WEAPONS_MAP = Map.of();
-
-    public List<WeaponMount> getWeaponMounts(int slot) {
-        ItemStack stack = getSlot(slot).get();
-        if (stack.getItem() instanceof WeaponItem weaponItem) {
-            return AircraftDataLoader.get(identifier).getWeaponMounts().getOrDefault(slot, EMPTY_WEAPONS_MAP).getOrDefault(weaponItem.getMountType(), EMPTY_WEAPONS);
-        }
-        return EMPTY_WEAPONS;
     }
 
     public List<ItemStack> getSlots(VehicleInventoryDescription.SlotType slotType) {
@@ -200,45 +184,7 @@ public abstract class InventoryVehicleEntity extends VehicleEntity implements Co
     }
 
     @Override
-    public void tick() {
-        getInventory().tick(this);
-
-        // Check and recreate weapon slots
-        for (VehicleInventoryDescription.Slot slot : getInventoryDescription().getSlots(VehicleInventoryDescription.SlotType.WEAPON)) {
-            ItemStack weaponItemStack = getSlot(slot.index()).get();
-            List<Weapon> weapon = weapons.get(slot.index());
-
-            if (weaponItemStack.isEmpty() && weapon != null) {
-                weapons.remove(slot.index());
-            } else if (!weaponItemStack.isEmpty() && (weapon == null || weapon.get(0).getStack() != weaponItemStack)) {
-                WeaponRegistry.WeaponConstructor constructor = WeaponRegistry.get(weaponItemStack);
-                if (constructor != null) {
-                    List<WeaponMount> weaponMounts = getWeaponMounts(slot.index());
-                    ArrayList<Weapon> weapons = new ArrayList<>(weaponMounts.size());
-                    for (WeaponMount weaponMount : weaponMounts) {
-                        weapons.add(constructor.create(this, weaponItemStack, weaponMount, slot.index()));
-                    }
-                    this.weapons.put(slot.index(), weapons);
-                }
-            }
-        }
-
-        // Update weapons
-        for (List<Weapon> weapons : weapons.values()) {
-            for (Weapon w : weapons) {
-                w.tick();
-            }
-        }
-
-        super.tick();
-    }
-
-    @Override
     public SlotAccess getSlot(int slot) {
         return SlotAccess.forContainer(getInventory(), slot);
-    }
-
-    public Map<Integer, List<Weapon>> getWeapons() {
-        return weapons;
     }
 }

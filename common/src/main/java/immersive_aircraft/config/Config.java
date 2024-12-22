@@ -106,8 +106,4 @@ public final class Config extends JsonConfig {
             "minecraft:tipped_arrow", 100,
             "minecraft:spectral_arrow", 100
     );
-
-    public Map<String, Integer> bombBayAmmunition = Map.of(
-            "minecraft:tnt", 100
-    );
 }

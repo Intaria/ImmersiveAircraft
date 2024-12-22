@@ -162,10 +162,6 @@ public class AircraftData {
         return inventoryDescription;
     }
 
-    public Map<Integer, Map<WeaponMount.Type, List<WeaponMount>>> getWeaponMounts() {
-        return weaponMounts;
-    }
-
     public List<BoundingBoxDescriptor> getBoundingBoxes() {
         return boundingBoxes;
     }
